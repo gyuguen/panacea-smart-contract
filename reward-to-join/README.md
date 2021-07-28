@@ -19,8 +19,8 @@ rustup target add wasm32-unknown-unknown
 
 ### Source Checkout
 ```shell
-git clone https://github.com/gyuguen/panacea-smart-contract
-cd panacea-smart-contract
+git clone https://github.com/medibloc/panacea-smart-contract
+cd panacea-smart-contract/reward-to-join
 ```
 
 ### Unit test
@@ -30,7 +30,7 @@ RUST_BACKTRACE=1 cargo unit-test
 
 ### Compile
 ```shell
-RUST_FLAGS='-C link-arg=-s' cargo panacea
+RUST_FLAGS='-C link-arg=-s' cargo reward-join
 ```
 
 ### Optimized Compilation
@@ -48,13 +48,13 @@ docker run --rm -v "$(pwd)":/code \
 PAYER={bech32:address}
 JOINER={bech32:address}
 TXFLAG=(--chain-id {your_chain_id} --gas auto --fees 1000000umed)
-RES=$(panacead tx wasm store artifacts/panacea_smart_contract.wasm --from $PAYER $TXFLAG -y)
+RES=$(panacead tx wasm store artifacts/reward_join.wasm --from $PAYER $TXFLAG -y)
 CODE_ID=$(echo $RES | jq -r '.logs[0].events[0].attributes[-1].value')
 
 panacead query wasm code $CODE_ID download.wasm
 
 # Same
-diff artifacts/panacea_smart_contract.wasm download.wasm
+diff artifacts/reward-join.wasm download.wasm
 ```
 
 ## 작업 시나리오
