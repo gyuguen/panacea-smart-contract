@@ -1,3 +1,9 @@
-*/.idea
-/target
-*/artifacts
+# IDE
+*.idea/
+*.iml
+build/
+.DS_Store
+*/target/
+*/artifacts/
+
+# gRPC 3rd party
