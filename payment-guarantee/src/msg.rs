@@ -19,8 +19,9 @@ pub enum ExecuteMsg {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub struct TokenInfoMsg {
-    pub token_id: String,
-    pub sender: String,
+    pub contract: String,
+    pub description: Option<String>,
     pub price: Coin,
+    pub sender: String,
 }
 

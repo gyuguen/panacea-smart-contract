@@ -180,10 +180,17 @@ mod tests {
         assert!(res.is_ok());
 
         let receive_info = mock_info("contract1", &[]);
+        let token_info_msg = TokenInfoMsg {
+            contract: "contract2".to_string(),
+            description: Some("No description".to_string()),
+            price: coin(1000000, "umed"),
+            sender: "sender".to_string(),
+        };
+
         let receive_msg = Cw721ReceiveMsg {
             sender: "sender".to_string(),
             token_id: "token1".to_string(),
-            msg: None,
+            msg: Some(to_binary(&token_info_msg).unwrap()),
         };
 
         // Unfortunately, Mock, who checks Wasm, is not yet implemented.
