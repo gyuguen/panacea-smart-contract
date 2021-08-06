@@ -5,8 +5,8 @@ use cw721::{Cw721ReceiveMsg, OwnerOfResponse};
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, TokenInfoMsg};
-use crate::query::QueryMsg;
 use crate::state::CONTRACT_INFO;
+use crate::query::QueryMsg;
 use crate::types::ContractInfo;
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -74,7 +74,7 @@ pub fn execute_receive_nft(
     }
 
     let token_id = msg.token_id.to_string();
-    let query_msg = QueryMsg::OwnerOf {
+    let query_msg = cw721_base::msg::QueryMsg::OwnerOf {
         token_id: token_id.to_string(),
         include_expired: None,
     };
