@@ -1,12 +1,10 @@
-use cosmwasm_std::{Binary, Deps, DepsMut, Empty, Env, from_binary, MessageInfo, Response, StdError, StdResult, to_binary, to_vec, from_slice};
+use cosmwasm_std::{Binary, Deps, DepsMut, Empty, Env, from_binary, from_slice, MessageInfo, Response, StdError, StdResult, to_binary, to_vec};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cw721::NftInfoResponse;
+use cw721::{NftInfoResponse, NumTokensResponse};
 use cw721_base::ContractError;
 use cw721_base::msg::QueryMsg;
 use cw721_base::msg::QueryMsg::NftInfo;
-use rand::{Rng, thread_rng};
-use rand::distributions::Alphanumeric;
 
 use crate::msg::{ExecuteMsg, InstantiateMsg, MintMsg};
 use crate::types::TokenInfo;
@@ -35,22 +33,17 @@ pub fn execute(
         ExecuteMsg::ApproveAll { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
         ExecuteMsg::RevokeAll { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
         ExecuteMsg::TransferNft { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
-        ExecuteMsg::SendNft { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
+        ExecuteMsg::SendNft { contract, token_id} => execute_send_nft(deps, env, info, contract, token_id),
     }
 }
 
 fn execute_mint(deps: DepsMut, env: Env, info: MessageInfo, mut msg: MintMsg) -> Result<Response, ContractError> {
     let contract_info: cw721::ContractInfoResponse = from_binary(&cw721_base::contract::query(deps.as_ref(), env.clone(), QueryMsg::ContractInfo {})?)?;
     let symbol = contract_info.symbol;
+    let num_token_res: NumTokensResponse = from_binary(&cw721_base::contract::query(deps.as_ref(), env.clone(), QueryMsg::NumTokens {})?)?;
+    let next_index = num_token_res.count + 1;
 
-    let rand_string: String = thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(20)
-        .map(char::from)
-        .collect();
-
-    let token_id: String = [symbol, rand_string].join(".");
-    msg.token_id = Some(token_id.to_string());
+    let token_id: String = [symbol, next_index.to_string()].join(".");
 
     let token_info = TokenInfo {
         contract: env.contract.address.to_string(),
@@ -59,13 +52,13 @@ fn execute_mint(deps: DepsMut, env: Env, info: MessageInfo, mut msg: MintMsg) ->
     };
     msg.description = Some(String::from_utf8(to_vec(&token_info).unwrap()).unwrap());
 
-    cw721_base::contract::execute_mint(deps, env, info, msg.into_cw721_mint_msg())
+    cw721_base::contract::execute_mint(deps, env, info, msg.into_cw721_mint_msg(token_id))
 }
 
 fn execute_send_nft(deps: DepsMut, env: Env, info: MessageInfo, contract: String, token_id: String) -> Result<Response, ContractError> {
     let nft_info: NftInfoResponse = from_binary(&cw721_base::contract::query(deps.as_ref(), env.clone(), NftInfo { token_id: token_id.to_string() })?)?;
 
-    let token_info:TokenInfo = from_slice(nft_info.description.as_bytes()).unwrap();
+    let token_info: TokenInfo = from_slice(nft_info.description.as_bytes()).unwrap();
 
 
     let token_info_with_sender = token_info.into_token_info_with_owner(info.sender.to_string());
@@ -93,7 +86,7 @@ mod tests {
 
     const MINTER: &str = "minter";
     const CONTRACT_NAME: &str = "Magic Power";
-    const SYMBOL: &str = "NFT_MED";
+    const SYMBOL: &str = "N_MED";
 
     fn setup_contract(deps: DepsMut) {
         let msg = InstantiateMsg {
@@ -113,7 +106,6 @@ mod tests {
         let env = mock_env();
 
         let mint_msg = MintMsg {
-            token_id: None,
             owner: MINTER.to_string(),
             name: "nft_med_1".to_string(),
             description: Some("No description".to_string()),
@@ -133,7 +125,7 @@ mod tests {
         assert_eq!(&attr("action", "mint"), attr1);
         assert_eq!(&attr("minter", MINTER), attr2);
         assert_eq!(attr3.key, "token_id");
-        assert_eq!(token_id.len(), 28);
+        assert_eq!([SYMBOL, "1"].join("."), token_id);
 
         let nft_info: NftInfoResponse = from_binary(&cw721_base::contract::query(deps.as_ref(), env.clone(), QueryMsg::NftInfo { token_id }).unwrap()).unwrap();
 
@@ -150,7 +142,6 @@ mod tests {
         let env = mock_env();
 
         let mint_msg = MintMsg {
-            token_id: None,
             owner: "minter2".to_string(),
             name: "nft_med_1".to_string(),
             description: Some("No description".to_string()),

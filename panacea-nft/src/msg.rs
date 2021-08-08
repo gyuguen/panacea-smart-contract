@@ -62,21 +62,18 @@ pub enum ExecuteMsg {
 impl ExecuteMsg {
     pub fn into_cw721_execute_msg(self) -> cw721_base::msg::ExecuteMsg {
         match self {
-            ExecuteMsg::Mint(msg) => cw721_base::msg::ExecuteMsg::Mint(msg.into_cw721_mint_msg()),
             ExecuteMsg::Approve { spender, token_id, expires } => cw721_base::msg::ExecuteMsg::Approve { spender, token_id, expires },
             ExecuteMsg::Revoke { spender, token_id } => cw721_base::msg::ExecuteMsg::Revoke { spender, token_id },
             ExecuteMsg::ApproveAll { operator, expires } => cw721_base::msg::ExecuteMsg::ApproveAll { operator, expires },
             ExecuteMsg::RevokeAll { operator } => cw721_base::msg::ExecuteMsg::RevokeAll { operator },
             ExecuteMsg::TransferNft { recipient, token_id } => cw721_base::msg::ExecuteMsg::TransferNft { recipient, token_id },
-            ExecuteMsg::SendNft { contract, token_id } => cw721_base::msg::ExecuteMsg::SendNft { contract, token_id, msg: None },
+            _ => panic!("unimplemented methods")
         }
     }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct MintMsg {
-    pub token_id: Option<String>,
-    /// The owner of the newly minter NFT
     pub owner: String,
     /// Identifies the asset to which this NFT represents
     pub name: String,
@@ -89,9 +86,9 @@ pub struct MintMsg {
 }
 
 impl MintMsg {
-    pub fn into_cw721_mint_msg(self) -> cw721_base::msg::MintMsg {
+    pub fn into_cw721_mint_msg(self, token_id: String) -> cw721_base::msg::MintMsg {
         cw721_base::msg::MintMsg {
-            token_id: self.token_id.unwrap_or_default(),
+            token_id,
             owner: self.owner.to_string(),
             name: self.name.to_string(),
             description: self.description.clone(),

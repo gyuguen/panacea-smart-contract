@@ -14,17 +14,6 @@ exclude = [
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[profile.release]
-apt-level = 3
-debug = false
-rpath = false
-lto = true
-debug-assertions = false
-codegen-units = 1
-panic = 'abort'
-incremental = false
-overflow-checks = true
-
 [features]
 backtraces = ["cosmwasm-std/backtraces"]
 
@@ -38,10 +27,6 @@ cosmwasm-storage = "0.14.0"
 schemars = "0.8.3"
 thiserror = "1.0.23"
 serde = { version = "1.0.126", default-features = false, features = ["derive"] }
-serde_json = "1.0.66"
-log = "0.4"
-rand = "0.8.4"
-getrandom = { version = "0.2", features = ["js"] }
 
 [dev-dependencies]
 cosmwasm-vm = { version = "0.14.0", default-features = false }
