@@ -79,7 +79,7 @@ docker run --rm -v "$(pwd)":/code \
 cd artifacts/
 ```
 
-You can check the two files below.
+You will see that two files were generated as below.
 ```shell
 checksums.txt    payment_guarantee.wasm
 ```
