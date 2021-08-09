@@ -116,8 +116,8 @@ panacead q bank balances $PAYMENT_CONTRACT
 ```
 
 ## NFT Transactions (Reward payments)
-Payment-guarantee's contract account address and token_id are required to receive the Reward.<br/>
-If the transaction is successful, the owner of the NFT will be changed and paid to the previous owner by the amount specified in the NFT.
+In order to receive the reward, the NFT must be sent (returned) to the `payment-guarantee` contract. For that, the contract address and token_id are required.
+If the transaction is successful, the owner of the NFT will be changed and the amount specified in the NFT will be paid to the previous owner.
 ```shell
 REWARD_NFT=$(jq -n --arg contract $PAYMENT_CONTRACT --arg token_id $TOKEN_ID '{"send_nft":{"contract":$contract,"token_id":$token_id}}')
 REWARD_NFT_RES=$(panacead tx wasm execute $NFT_CONTRACT "$REWARD_NFT" --from $TRANSFER_OWNER $TX_FLAG -y)
