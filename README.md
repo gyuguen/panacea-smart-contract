@@ -68,7 +68,7 @@ QUERY_OWNER_OF=$(jq -n --arg token_id $TOKEN_ID '{"owner_of":{"token_id":$token_
 panacead q wasm contract-state smart $NFT_CONTRACT $QUERY_OWNER_OF # Changed transfer_owner
 ```
 
-## Create Payment Guarantee contract
+## Creating Payment Guarantee contract
 You must go to the payment-guarantee path and compile it.
 ```shell
 cd payment-guarantee
