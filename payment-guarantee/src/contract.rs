@@ -69,7 +69,7 @@ pub fn execute_receive_nft(
     let contract_info = CONTRACT_INFO.load(deps.storage)?;
     if is_invalid_from_contract(&contract_info, source_contract.to_string()) {
         return Err(ContractError::Unauthorized {
-            msg: format!("The token has a different contract. source: {}, this: {}", source_contract.as_str(), contract_info.source_contracts.join(",")),
+            msg: format!("The token belongs to an unexpected contract. actual: {}, expected: {}", source_contract.as_str(), contract_info.source_contracts.join(",")),
         });
     }
 
