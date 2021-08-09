@@ -57,7 +57,7 @@ QUERY_OWNER_OF=$(jq -n --arg token_id $TOKEN_ID '{"owner_of":{"token_id":$token_
 panacead q wasm contract-state smart $NFT_CONTRACT $QUERY_OWNER_OF
 ```
 
-Transfer owner of NFT
+Transfer ownership of the NFT
 ```shell
 TRANSFER_OWNER=$(panacead keys show {key or address} -a)
 TRANSFER=$(jq -n --arg recipient $TRANSFER_OWNER --arg token_id $TOKEN_ID '{"transfer_nft":{"recipient":$recipient, "token_id":$token_id}}')
