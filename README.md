@@ -1,6 +1,6 @@
 # Panacea Smart Contract
 
-## Required
+## Prerequisites
 * Docker
 
 ## This document
