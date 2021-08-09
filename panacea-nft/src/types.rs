@@ -10,7 +10,7 @@ pub struct TokenInfo {
 }
 
 impl TokenInfo {
-    pub fn into_token_info_with_owner(self, sender: String) -> TokenInfoWithSender {
+    pub fn into_token_info_with_sender(self, sender: String) -> TokenInfoWithSender {
         TokenInfoWithSender {
             contract: self.contract,
             description: self.description,
