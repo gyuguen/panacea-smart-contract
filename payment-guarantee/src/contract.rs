@@ -86,7 +86,7 @@ pub fn execute_receive_nft(
 
     let res: StdResult<TokenInfoMsg> = from_binary(&msg.msg.unwrap());
     if res.is_err() {
-        return Err(ContractError::InvalidParameter { msg: "msg is invalid parameter.".to_string() });
+        return Err(ContractError::InvalidParameter { msg: "msg is invalid".to_string() });
     }
 
     let token_info_msg = res.unwrap();
