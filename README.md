@@ -2,6 +2,9 @@
 
 ## Prerequisites
 * Docker
+* Rust
+* Docker
+* jq
 
 ## Introduction
 This document covers:
