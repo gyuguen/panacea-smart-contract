@@ -3,8 +3,10 @@
 ## Prerequisites
 * Docker
 
-## This document
-How to create a Payment Garantee contract with NFT and exchange tokens.
+## Introduction
+This document covers:
+- How to create Panacea NFT contracts for minting/transferring NFTs.
+- How to create Payment Guarantee contracts for exchanging NFTs for MED.
 
 ## Creating a NFT contract
 You must go to the panacea-nft directory and compile it.
