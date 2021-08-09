@@ -7,7 +7,7 @@
 How to create a Payment Garantee contract with NFT and exchange tokens.
 
 ## Creating NFT
-You must go to the panacea-nft path and compile it.
+You must go to the panacea-nft directory and compile it.
 ```shell
 cd panacea-nft
 docker run --rm -v "$(pwd)":/code \
