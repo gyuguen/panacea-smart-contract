@@ -6,7 +6,7 @@
 ## This document
 How to create a Payment Garantee contract with NFT and exchange tokens.
 
-## Creating NFT
+## Creating a NFT contract
 You must go to the panacea-nft directory and compile it.
 ```shell
 cd panacea-nft
