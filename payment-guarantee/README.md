@@ -40,7 +40,7 @@ $TX_FLAG -y \
 PAYMENT_CONTRACT=$(echo $INIT_RES | jq -r '.logs[].events[].attributes[0] | select(.key == "contract_address").value')
 ```
 
-Deposit
+Put a deposit (reversed fund).
 ```shell
 DEPOSIT_RES=$(panacead tx wasm execute $PAYMENT_CONTRACT '{"deposit":{}}' --amount 1000000000umed --from $CREATOR $TX_FLAG -y)
 
