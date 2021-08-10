@@ -1,9 +1,9 @@
 [package]
-name = "payment-guarantee"
+name = "panacea-nft"
 version = "0.1.0"
 edition = "2018"
-description = "payment-guarantee"
-repository = "https://github.com/gyuguen/panacea-smart-contract/payment-guarantee"
+description = "panacea-nft"
+repository = "https://github.com/gyuguen/panacea-smart-contract"
 
 exclude = [
     # Those files are rust-optimizer artifacts. You might want to commit them for convenience but they should not be part of the source code publication.
@@ -11,27 +11,15 @@ exclude = [
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [lib]
 crate-type = ["cdylib", "rlib"]
-
-[profile.release]
-apt-level = 3
-debug = false
-rpath = false
-lto = true
-debug-assertions = false
-codegen-units = 1
-panic = 'abort'
-incremental = false
-overflow-checks = true
 
 [features]
 backtraces = ["cosmwasm-std/backtraces"]
 
 [dependencies]
 cw721 = "0.6.2"
-cw721-base = { version = "0.6.2", feature = ["library"] }
+cw721-base = { version = "0.6.2", features = ["library"] }
 cw-storage-plus = "0.6.2"
 
 cosmwasm-std = "0.14.0"
