@@ -1,13 +1,11 @@
-use cosmwasm_std::{Binary, Deps, DepsMut, Empty, Env, from_binary, from_slice, MessageInfo, Response, StdError, StdResult, to_binary, to_vec};
+use cosmwasm_std::{Binary, Deps, DepsMut, Env, from_binary, MessageInfo, Response, StdResult, to_binary, to_vec};
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cw721::{NftInfoResponse, NumTokensResponse};
+use cw721::{NumTokensResponse, OwnerOfResponse};
 use cw721_base::ContractError;
 use cw721_base::msg::QueryMsg;
-use cw721_base::msg::QueryMsg::NftInfo;
 
-use crate::msg::{ExecuteMsg, InstantiateMsg, MintMsg};
-use crate::types::TokenInfo;
+use crate::{ExecuteMsg, InstantiateMsg, MintMsg, TokenInfo};
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
@@ -28,12 +26,8 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::Mint(msg) => execute_mint(deps, env, info, msg),
-        ExecuteMsg::Approve { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
-        ExecuteMsg::Revoke { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
-        ExecuteMsg::ApproveAll { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
-        ExecuteMsg::RevokeAll { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
-        ExecuteMsg::TransferNft { .. } => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
-        ExecuteMsg::SendNft { contract, token_id} => execute_send_nft(deps, env, info, contract, token_id),
+        ExecuteMsg::SendNft { contract, token_id } => execute_send_nft(deps, env, info, contract, token_id),
+        _ => cw721_base::contract::execute(deps, env, info, msg.into_cw721_execute_msg()),
     }
 }
 
@@ -46,8 +40,6 @@ fn execute_mint(deps: DepsMut, env: Env, info: MessageInfo, mut msg: MintMsg) ->
     let token_id: String = [symbol, next_index.to_string()].join(".");
 
     let token_info = TokenInfo {
-        contract: env.contract.address.to_string(),
-        description: msg.description.clone(),
         price: msg.price.clone(),
     };
     msg.description = Some(String::from_utf8(to_vec(&token_info).unwrap()).unwrap());
@@ -56,13 +48,12 @@ fn execute_mint(deps: DepsMut, env: Env, info: MessageInfo, mut msg: MintMsg) ->
 }
 
 fn execute_send_nft(deps: DepsMut, env: Env, info: MessageInfo, contract: String, token_id: String) -> Result<Response, ContractError> {
-    let nft_info: NftInfoResponse = from_binary(&cw721_base::contract::query(deps.as_ref(), env.clone(), NftInfo { token_id: token_id.to_string() })?)?;
+    let owner_of: OwnerOfResponse = from_binary(&cw721_base::contract::query(deps.as_ref(), env.clone(), QueryMsg::OwnerOf {
+        token_id: token_id.to_string(),
+        include_expired: None,
+    })?)?;
 
-    let token_info: TokenInfo = from_slice(nft_info.description.as_bytes()).unwrap();
-
-
-    let token_info_with_sender = token_info.into_token_info_with_owner(info.sender.to_string());
-    cw721_base::contract::execute_send_nft(deps, env, info, contract, token_id, Some(to_binary(&token_info_with_sender)?))
+    cw721_base::contract::execute_send_nft(deps, env, info, contract, token_id, Some(to_binary(&owner_of)?))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -76,11 +67,12 @@ mod tests {
 
     use cosmwasm_std::{attr, coin, CosmosMsg, DepsMut, from_slice, to_vec, WasmMsg};
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cw721::Cw721ExecuteMsg;
+    use cw721::{Approval, Cw721ExecuteMsg, Expiration};
+    use cw721_base::msg::ExecuteMsg::Approve;
     use cw721_base::msg::InstantiateMsg;
 
     use crate::msg::ReceiverExecuteMsg;
-    use crate::types::{TokenInfo, TokenInfoWithSender};
+    use crate::types::TokenInfo;
 
     use super::*;
 
@@ -130,8 +122,6 @@ mod tests {
         let nft_info: NftInfoResponse = from_binary(&cw721_base::contract::query(deps.as_ref(), env.clone(), QueryMsg::NftInfo { token_id }).unwrap()).unwrap();
 
         let token_info: TokenInfo = from_slice(nft_info.description.as_bytes()).unwrap();
-        assert_eq!("cosmos2contract", token_info.contract);
-        assert_eq!(Some("No description".to_string()), token_info.description);
         assert_eq!(coin(1000000, "umed"), token_info.price);
     }
 
@@ -155,6 +145,11 @@ mod tests {
 
         let token_id = res.unwrap().attributes.get(2).unwrap().value.to_string();
 
+        let approve_info = mock_info(mint_msg.owner.as_str(), &[]);
+        let spender = "spender";
+        let res = cw721_base::contract::execute_approve(deps.as_mut(), env.clone(), approve_info.clone(), spender.to_string(), token_id.to_string(), None);
+        assert!(res.is_ok());
+
         let send_info = mock_info(mint_msg.owner.as_str(), &[]);
         let send_contract = "payment_guarantee".to_string();
         let res = execute_send_nft(deps.as_mut(), env.clone(), send_info.clone(), send_contract.to_string(), token_id.to_string());
@@ -171,11 +166,14 @@ mod tests {
                 if let ReceiverExecuteMsg::ReceiveNft(receiver_msg) = receiver_execute_msg {
                     assert_eq!(mint_msg.owner, receiver_msg.sender);
                     assert_eq!(token_id.as_str(), receiver_msg.token_id);
-                    let token_info: TokenInfoWithSender = from_binary(&receiver_msg.msg.unwrap()).unwrap();
-                    assert_eq!("cosmos2contract", token_info.contract);
-                    assert_eq!(Some("No description".to_string()), token_info.description);
-                    assert_eq!(coin(1000000, "umed"), token_info.price);
-                    assert_eq!(send_info.sender, token_info.sender);
+                    let owner_of: OwnerOfResponse = from_binary(&receiver_msg.msg.unwrap()).unwrap();
+                    assert_eq!(mint_msg.owner, owner_of.owner);
+                    assert_eq!(
+                        vec![Approval {
+                            spender: spender.to_string(),
+                            expires: Expiration::Never {},
+                        }],
+                        owner_of.approvals);
                 }
             }
         }

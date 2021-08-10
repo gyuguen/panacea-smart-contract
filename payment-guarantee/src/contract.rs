@@ -1,13 +1,13 @@
 use std::borrow::Borrow;
 
-use cosmwasm_std::{attr, BankMsg, Binary, Coin, CosmosMsg, Deps, DepsMut, entry_point, Env, from_binary, MessageInfo, Response, StdResult, to_binary, WasmMsg};
-use cw721::{Cw721ReceiveMsg, OwnerOfResponse};
+use cosmwasm_std::{attr, BankMsg, Binary, Coin, coin, CosmosMsg, Deps, DepsMut, entry_point, Env, from_binary, from_slice, MessageInfo, Response, StdResult, to_binary, WasmMsg};
+use cw721::{AllNftInfoResponse, Cw721ReceiveMsg, OwnerOfResponse};
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, TokenInfoMsg};
-use crate::state::CONTRACT_INFO;
 use crate::query::QueryMsg;
-use crate::types::ContractInfo;
+use crate::state::CONTRACT_INFO;
+use crate::types::{ContractInfo, TokenInfo};
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
@@ -74,32 +74,27 @@ pub fn execute_receive_nft(
     }
 
     let token_id = msg.token_id.to_string();
-    let query_msg = cw721_base::msg::QueryMsg::OwnerOf {
+    let query_msg = cw721_base::msg::QueryMsg::AllNftInfo {
         token_id: token_id.to_string(),
         include_expired: None,
     };
 
-    let res: OwnerOfResponse = deps.querier.query_wasm_smart(source_contract.as_str(), &query_msg)?;
-    if env.contract.address.to_string().ne(res.owner.as_str()) {
+    let all_nft_info: AllNftInfoResponse = deps.querier.query_wasm_smart(source_contract.as_str(), &query_msg)?;
+    if env.contract.address.to_string().ne(all_nft_info.access.owner.as_str()) {
         return Err(ContractError::Unauthorized { msg: "The owner of the token must be this contract.".to_string() });
     }
 
-    let res: StdResult<TokenInfoMsg> = from_binary(&msg.msg.unwrap());
-    if res.is_err() {
-        return Err(ContractError::InvalidParameter { msg: "msg is invalid parameter.".to_string() });
-    }
-
-    let token_info_msg = res.unwrap();
-    let token_price = token_info_msg.price;
+    let token_info: TokenInfo = from_slice(all_nft_info.info.description.as_bytes()).unwrap();
+    let token_price = token_info.price;
 
     let deposit_coin = deps.querier.query_balance(env.contract.address, token_price.denom.clone())?;
-    if deposit_coin.amount.le(token_price.amount.borrow()) {
+    if deposit_coin.amount.lt(token_price.amount.borrow()) {
         return Err(ContractError::InsufficientDeposit {});
     }
 
     let execute_bank_send_msg = CosmosMsg::Bank(BankMsg::Send {
-        to_address: token_info_msg.sender,
-        amount: vec![token_price],
+        to_address: msg.sender.to_string(),
+        amount: vec![token_price.clone()],
     });
     let transfer_msg = cw721_base::msg::ExecuteMsg::TransferNft {
         recipient: contract_info.payer,
@@ -109,7 +104,7 @@ pub fn execute_receive_nft(
     let execute_wasm_msg = CosmosMsg::Wasm(WasmMsg::Execute {
         contract_addr: source_contract.to_string(),
         msg: to_binary(&transfer_msg)?,
-        send: vec![],
+        send: vec![token_price],
     });
 
     Ok(Response {
@@ -129,13 +124,6 @@ fn is_invalid_from_contract(contract_info: &ContractInfo, source_contract: Strin
     contract_info.source_contracts
         .iter()
         .any(|x| x.eq(source_contract.as_str())) == false
-}
-
-fn do_not_have_enough_deposit(deps: DepsMut, env: Env, token_price: Coin) -> bool {
-    let deposits = deps.querier.query_all_balances(&env.contract.address).unwrap();
-    deposits.iter()
-        .filter(|deposit| deposit.denom.eq(token_price.denom.as_str()))
-        .any(|deposit| deposit.amount >= token_price.amount) == false
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

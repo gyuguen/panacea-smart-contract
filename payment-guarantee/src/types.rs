@@ -10,8 +10,5 @@ pub struct ContractInfo {
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
 pub struct TokenInfo {
-    pub contract: String,
-    pub token_id: String,
-    pub owner: String,
     pub price: Coin,
 }
