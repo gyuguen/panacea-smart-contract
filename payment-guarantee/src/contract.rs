@@ -104,7 +104,7 @@ pub fn execute_receive_nft(
     let execute_wasm_msg = CosmosMsg::Wasm(WasmMsg::Execute {
         contract_addr: source_contract.to_string(),
         msg: to_binary(&transfer_msg)?,
-        send: vec![token_price],
+        send: vec![],
     });
 
     Ok(Response {
@@ -114,7 +114,8 @@ pub fn execute_receive_nft(
             attr("action", "receive_nft"),
             attr("sender", msg.sender.to_string()),
             attr("sender_contract", info.sender.to_string()),
-            attr("amount", msg.token_id.to_string()),
+            attr("token_id", msg.token_id.to_string()),
+            attr("price",  token_price),
         ],
         data: None,
     })

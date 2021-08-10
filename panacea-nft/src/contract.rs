@@ -67,7 +67,7 @@ mod tests {
 
     use cosmwasm_std::{attr, coin, CosmosMsg, DepsMut, from_slice, to_vec, WasmMsg};
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cw721::{Approval, Cw721ExecuteMsg, Expiration};
+    use cw721::{Approval, Cw721ExecuteMsg, Expiration, NftInfoResponse};
     use cw721_base::msg::ExecuteMsg::Approve;
     use cw721_base::msg::InstantiateMsg;
 

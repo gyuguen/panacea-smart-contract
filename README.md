@@ -70,7 +70,7 @@ Transfer ownership of the NFT
 # make transfer_owner key
 panacead keys add transfer_owner
 TRANSFER_OWNER=$(panacead keys show transfer_owner -a)
-panacead tx bank send $MINTER $TRANSFER_OWNER 1000000umed --from $MINTER $TX_FLAG -y
+panacead tx bank send $MINTER $TRANSFER_OWNER 2000000umed --from $MINTER $TX_FLAG -y
 echo $MINTER
 echo $TRANSFER_OWNER
 
