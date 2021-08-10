@@ -350,6 +350,69 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-storage-plus"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87ff94b5ffdf17e993465781d6eeb72cc518b24b735d0772988b06525e657153"
+dependencies = [
+ "cosmwasm-std",
+ "schemars",
+ "serde",
+]
+
+[[package]]
+name = "cw0"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "659be0365f0b3ef5cae0139c4226661f0a27a70ea4e6fd1268c0f838a10cfaea"
+dependencies = [
+ "cosmwasm-std",
+ "schemars",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
+name = "cw2"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "02e186f4056304a3f801ed5e192dbe598cc319afad712b6c4baa4e207f30da8a"
+dependencies = [
+ "cosmwasm-std",
+ "cw-storage-plus",
+ "schemars",
+ "serde",
+]
+
+[[package]]
+name = "cw721"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ea1d0566c544c81a0f03810f197ed2815fffa9765144f75305169f9bab225085"
+dependencies = [
+ "cosmwasm-std",
+ "cw0",
+ "schemars",
+ "serde",
+]
+
+[[package]]
+name = "cw721-base"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "64e155f5150fd220ada49ef48f20f84a8b0ea1ddc2a17bf9353c43cf45ba36c1"
+dependencies = [
+ "cosmwasm-std",
+ "cw-storage-plus",
+ "cw0",
+ "cw2",
+ "cw721",
+ "schemars",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "darling"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -781,6 +844,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
+name = "panacea-nft"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-schema",
+ "cosmwasm-std",
+ "cosmwasm-storage",
+ "cosmwasm-vm",
+ "cw-storage-plus",
+ "cw721",
+ "cw721-base",
+ "schemars",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "parity-wasm"
 version = "0.42.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -931,9 +1010,9 @@ dependencies = [
 
 [[package]]
 name = "redox_syscall"
-version = "0.2.9"
+version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ab49abadf3f9e1c4bc499e8845e152ad87d2ad2d30371841171169e9d75feee"
+checksum = "8383f39639269cde97d255a32bdb68c047337295414940c68bdd30c2e13203ff"
 dependencies = [
  "bitflags",
 ]
@@ -968,20 +1047,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3acd125665422973a33ac9d3dd2df85edad0f4ae9b00dafb1a05e43a9f5ef8e7"
 dependencies = [
  "winapi",
-]
-
-[[package]]
-name = "reward-join"
-version = "0.1.0"
-dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
- "cosmwasm-storage",
- "cosmwasm-vm",
- "log",
- "schemars",
- "serde",
- "thiserror",
 ]
 
 [[package]]

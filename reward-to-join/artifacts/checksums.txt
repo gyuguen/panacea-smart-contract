@@ -1,1 +1,1 @@
-957eef02a291f0f9cccbc46da634b65200b2b1fd37922c2414f0d8e18a69ea23  panacea_smart_contract.wasm
+b180df90dafed3aa4c67f5f9195e5e024970976b46f1c8a73d78f7e3283dcbc3  reward_join.wasm

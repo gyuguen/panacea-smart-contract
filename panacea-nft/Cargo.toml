@@ -1,0 +1,33 @@
+[package]
+name = "panacea-nft"
+version = "0.1.0"
+edition = "2018"
+description = "panacea-nft"
+repository = "https://github.com/gyuguen/panacea-smart-contract"
+
+exclude = [
+    # Those files are rust-optimizer artifacts. You might want to commit them for convenience but they should not be part of the source code publication.
+    "artifacts/*",
+]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+backtraces = ["cosmwasm-std/backtraces"]
+
+[dependencies]
+cw721 = "0.6.2"
+cw721-base = { version = "0.6.2", features = ["library"] }
+cw-storage-plus = "0.6.2"
+
+cosmwasm-std = "0.14.0"
+cosmwasm-storage = "0.14.0"
+schemars = "0.8.3"
+thiserror = "1.0.23"
+serde = { version = "1.0.126", default-features = false, features = ["derive"] }
+
+[dev-dependencies]
+cosmwasm-vm = { version = "0.14.0", default-features = false }
+cosmwasm-schema = "0.14.0"
