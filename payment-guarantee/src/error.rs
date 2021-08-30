@@ -18,4 +18,7 @@ pub enum ContractError {
 
     #[error("InsufficientDeposit")]
     InsufficientDeposit {},
+
+    #[error("UnmatchedPayer")]
+    UnmatchedPayer {},
 }
