@@ -1,9 +1,9 @@
 [package]
-name = "payment-guarantee"
+name = "panacea-nft-redeem"
 version = "0.1.0"
 edition = "2018"
-description = "payment-guarantee"
-repository = "https://github.com/gyuguen/panacea-smart-contract/payment-guarantee"
+description = "panacea-nft-redeem"
+repository = "https://github.com/gyuguen/panacea-smart-contract/panacea-nft-redeem"
 
 exclude = [
     # Those files are rust-optimizer artifacts. You might want to commit them for convenience but they should not be part of the source code publication.

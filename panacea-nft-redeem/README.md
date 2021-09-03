@@ -1,4 +1,4 @@
-# Payment Guarantee
+# Panacea NFT Redeem
 
 ## Prerequisites
 * panacea-core
