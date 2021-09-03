@@ -14,6 +14,8 @@ pub struct InstantiateMsg {
 pub enum ExecuteMsg {
     Deposit {},
     ReceiveNft(Cw721ReceiveMsg),
+    RecoverOwner {contract: String, token_id: String},
+    Refund { },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
