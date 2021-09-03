@@ -9,7 +9,7 @@
 ## Introduction
 This document covers:
 - How to create Panacea NFT contracts for minting/transferring NFTs.
-- How to create Payment Guarantee contracts for exchanging NFTs for MED.
+- How to create Panacea NFT Redeem contracts for exchanging NFTs for MED.
 
 ## Creating a NFT contract
 You must go to the panacea-nft directory and compile it.
@@ -84,10 +84,10 @@ panacead q wasm contract-state smart $NFT_CONTRACT $QUERY_OWNER_OF # Changed tra
 echo $TRANSFER_OWNER
 ```
 
-## Creating Payment Guarantee contract
-You must go to the payment-guarantee path and compile it.
+## Creating Panacea NFT Redeem contract
+You must go to the panacea-nft-redeem path and compile it.
 ```shell
-cd payment-guarantee
+cd panacea-nft-redeem
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
@@ -97,7 +97,7 @@ cd artifacts/
 
 You will see that two files were generated as below.
 ```shell
-checksums.txt    payment_guarantee.wasm
+checksums.txt    panacea_nft_redeem.wasm
 ```
 
 Store this contract in panacea.

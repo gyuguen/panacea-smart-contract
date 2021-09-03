@@ -850,7 +850,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be5e13c266502aadf83426d87d81a0f5d1ef45b8027f5a471c360abfe4bfae92"
 
 [[package]]
-name = "payment-guarantee"
+name = "panacea-nft-redeem"
 version = "0.1.0"
 dependencies = [
  "cosmwasm-schema",
