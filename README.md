@@ -1,9 +1,9 @@
 # Panacea Smart Contract
 
 ## Prerequisites
+* panacea-core
 * Docker
 * Rust
-* Docker
 * jq
 
 ## Introduction
